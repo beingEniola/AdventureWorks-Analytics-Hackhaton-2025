@@ -62,7 +62,8 @@ SELECT SUM(TotalDue) AS Revenue,
     SUM(OrderQty) AS Totalqty
 FROM Sales.SalesOrderHeader soh
 JOIN Sales.SalesOrderDetail sod
-ON soh.SalesOrderID = sod.SalesOrderID
+ON soh.SalesOrderID = sod.SalesOrderID;
+```
 
 
 
