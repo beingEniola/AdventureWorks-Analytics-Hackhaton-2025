@@ -19,7 +19,7 @@ AdventureWorks is a global manufacturing company that sells products through onl
 5. Reporting
 
 ## Data Collection
-The dataset was sourced online, which I got from [https://learn.microsoft.com/en-us/sql/samples/adventureworks-install-configure?view=sql-server-ver16&tabs=ssms] Microsoft Learn. I downloaded the AdventureWorks2019.bak file. and Restored the database on SSMS. 
+The dataset was sourced online, which I got from [Microsoft Learn](https://learn.microsoft.com/en-us/sql/samples/adventureworks-install-configure?view=sql-server-ver16&tabs=ssms). I downloaded the AdventureWorks2019.bak file. and Restored the database on SSMS. 
 
 ## Understanding the Obejective
 I spent a while trying to understand the business objectives and what is expected of me. Management wants to understand business performance, customer behavior, and product trends. To be able to answer this I thought of possible questions and Insights that will help management. 
@@ -55,6 +55,7 @@ I carried out further exploration of each of the tables to understand it better 
 1. Key Performance Indicators
    
 I started by calculating the core KPIs: Total Revenue, Total Orders Sold, and Total Quantity
+
 ```sql
 SELECT SUM(TotalDue) AS Revenue,
     COUNT(DISTINCT soh.SalesOrderID) AS OrderCount,
@@ -62,7 +63,6 @@ SELECT SUM(TotalDue) AS Revenue,
 FROM Sales.SalesOrderHeader soh
 JOIN Sales.SalesOrderDetail sod
 ON soh.SalesOrderID = sod.SalesOrderID
-```sql
 
 
 
