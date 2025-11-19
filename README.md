@@ -52,7 +52,7 @@ I carried out further exploration of each of the tables to understand it better 
 
 ## Data Analysis
 
-1. Key Performance Indicators
+### 1. Key Performance Indicators
    
 I started by calculating the core KPIs: Total Revenue, Total Orders Sold, and Total Quantity
 
@@ -62,7 +62,47 @@ SELECT SUM(TotalDue) AS Revenue,
     SUM(OrderQty) AS Totalqty
 FROM Sales.SalesOrderHeader soh
 JOIN Sales.SalesOrderDetail sod
-ON soh.SalesOrderID = sod.SalesOrderID;
+ON soh.SalesOrderID = sod.SalesOrderID
+```
+
+### 2. How has Sales grown over the years
+
+I thought It would be good to see how Sales has grown over the years
+
+```sql
+WITH YearlyRevenue AS
+(
+    SELECT 
+        YEAR(OrderDate) AS Year,
+        SUM(TotalDue) AS Revenue
+    FROM Sales.SalesOrderHeader
+    GROUP BY YEAR(OrderDate)
+)
+SELECT 
+    Year,
+    Revenue,
+    LAG(Revenue) OVER (ORDER BY Year) AS Prev_Revenue,
+    ROUND(
+        CASE 
+            WHEN LAG(Revenue) OVER (ORDER BY Year) IS NULL THEN NULL
+            ELSE 100.0 * (Revenue - LAG(Revenue) OVER (ORDER BY Year)) / LAG(Revenue) OVER (ORDER BY Year)
+        END, 2
+    ) AS Growth_Percent
+FROM YearlyRevenue
+ORDER BY Year
+```
+It shows that Revenue declined by 54% in 2014
+
+
+### 2. Which Channel drives the most Sales?
+
+```sql
+SELECT soh.OnlineOrderFlag,
+SUM(soh.TotalDue) AS Revenue,
+COUNT(DISTINCT soh.SalesOrderID) AS NumOrders,
+AVG(soh.TotalDue) AS AvgOrderValue
+FROM Sales.SalesOrderHeader soh
+GROUP BY soh.OnlineOrderFlag;
 ```
 
 
