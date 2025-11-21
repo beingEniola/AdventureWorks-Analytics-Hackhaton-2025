@@ -1,15 +1,15 @@
 # AdventureWorks-Analytics-Hackhaton-2025
 
 ## Introduction
-This project is my solution for the Analytics Hackhaton 2025.  I have been tasked to explore and analyze the AdventureWorks dataset, identify five (5) high-quality insights that have business relevance, and support each insight with evidence.
+This project is my end-to-end-solution for the Analytics Hackhaton 2025.  I have been tasked to explore and analyze the AdventureWorks dataset, identify five (5) high-quality insights that have business relevance, and support each insight with evidence.
 
 ## Problem Statement
 AdventureWorks is a global manufacturing company that sells products through online and reseller channels. Management wants to understand business performance, customer behavior, and product trends.
 
 ## Tools Used
-1. Microsoft SQL server for Data Exploration, Cleaning and Querying
-2. Power BI For interactive Dashboard
-3. PowerPoint for Presentation
+1. Microsoft SQL server - For Data Exploration, Cleaning and Querying
+2. Power BI - To develop interactive dashboard
+3. PowerPoint - For Presentation
 
 ## Project Workflow
 1. Data Collection
@@ -23,19 +23,22 @@ AdventureWorks is a global manufacturing company that sells products through onl
 The dataset was sourced online, which I got from [Microsoft Learn](https://learn.microsoft.com/en-us/sql/samples/adventureworks-install-configure?view=sql-server-ver16&tabs=ssms). I downloaded the AdventureWorks2019.bak file. and restored the database on SSMS. 
 
 ## Understanding the Problem Statement
-I spent a while trying to understand the business objectives and what is expected of me. Management wants to understand business performance, customer behavior, and product trends. To be able to answer this I thought of possible questions and Insights that will help management. 
+I spent time understanding the business objectives and what was expected of me. Management wants to understand business performance, customer behavior, and product trends.
 
-First of what are the KPIs  to track - Revenue,  Total Quantity Sold, Total Orders, Profit and Profit Margin
+To address these needs, I outlined key questions and insights that would help management make informed decisions.
 
-Then,
-How has Sales grown over the years?
-Where does Sales come from? Online or Reseller Channel?
-What are our top-selling products?
-What is the purchasing behaviour of our Customers?
-Where are they buying from?
+First, I identified the core KPIs to track: Revenue, Total Quantity Sold, Total Orders, Profit, and Profit Margin.
+
+Then I considered questions such as:
+
+- How has sales performance changed over the years?
+- Which channel contributes more—Online or Reseller?
+- What are the top-selling products?
+- What is the purchasing behavior of our customers?
+- Which regions generate the most revenue?
 
 ## Data Exploration
-Once the questions were defined, I went on to explore the data to have a better understanding of the dataset. First thing I did was to have an overview of the database
+After defining the questions, I explored the data to better understand the dataset. My first step was to get an overview of the database:
 
 ```sql
 SELECT TABLE_NAME
@@ -45,24 +48,24 @@ WHERE TABLE_TYPE = 'BASE TABLE'
 
 <img width="210" height="317" alt="image" src="https://github.com/user-attachments/assets/de150ada-aaca-490b-9672-8d50b68304c6" />
 
+The result showed that the database contains 72 tables.
 
-After running the query I realized the database has a total of 72 Tables. 
+Since not all of them were needed, I selected five core tables for the analysis:
 
-I definitely do not need this much tables so I chose five relevant tables to focus on. The tables are 
-
-- Sales.SalesOrderHeader: Contains sales order details (aggregated order information)
-- Sales.SalesOrderDetail: Contains detailed line-item order information for each product in an order
+- Sales.SalesOrderHeader: Contains aggregated sales order information
+- Sales.SalesOrderDetail: Contains detailed line items for each order
 - Production.Product: Contains product information
 - Sales.Customer: Contains customer information
-- Sales.SalesTerritory: contains regional territories
+- Sales.SalesTerritory: contains regional Sales territories
 
-I carried out further exploration of each of the tables to get clarity and also validate them, I checked for tables shape, missing values, standardized columns where needed and selected relevant fields needed in my analysis while discarding the other.
+I explored each table to understand its structure, check for missing values, clean where necessary, and select only the relevant fields.
 
-A new schema (Cleaned) was created to save my cleaned tables, the cleaned tables were created as VIEWS. 
+I then created a new schema named Cleaned to store cleaned tables as views.
 
 ```sql
 CREATE SCHEMA Cleaned;
 ```
+Example of cleaning SalesOrderHeader:
 
 ```sql
 GO
@@ -73,15 +76,15 @@ SELECT SalesOrderID, OrderDate,ShipDate,
 FROM Sales.SalesOrderHeader;
 GO
 ```
-For, example the code above is how I cleaned the SalesOrderHeader table and store as a view. I changed the OnlineOrderFlag field values to a standardized readable value and also renamed the field name to Channel.
+Here, I standardized OnlineOrderFlag field into readable values and renamed it to Channel.
 
 ## Data Analysis
 
-Here, I provide answers to the questions I outlined, I made use of SQl concepts Such as Aggregate functions, JOINS, CTEs...
+Here, I answered the questions outlined earlier using SQL concepts such as aggregate functions, joins, and CTEs.
 
-### . Key Performance Indicators
+### 1. Key Performance Indicators
    
-I started by calculating the core KPIs: Total Revenue, Total Orders Sold, and Total Quantity, Profit and Profit Margin. These are essential metrucs to track business performance.
+I began by calculating the core KPIs: Total Revenue, Total Orders, Total Quantity Sold, Profit, and Profit Margin.
 
 ```sql
 SELECT
@@ -107,14 +110,11 @@ SELECT
 ```
 <img width="610" height="52" alt="image" src="https://github.com/user-attachments/assets/98c9a1ae-e5b4-49ea-a3b3-69e5c69ba46f" />
 
+This shows the business generated $109.85M in revenue, received 31,465 orders, sold 274.9K product units, earned $9.37M profit, and achieved an 8.53% profit margin.
 
-This shows that the business has made $109.85M in revenue, recieved 31,465 orders, sold a total of 274.9K quantities Of products, made a profit of $9.37M with 8.53% Profit margin.
+The business is performing well, generating strong revenue from high-value orders, though the 8.5% margin indicates room for improvement.
 
-The business is performing well, generating strong revenue from high-value orders, but its profit margin of 8.5% is moderate, which can be improved.
-
-### .  How has Sales grown over the years
-
-Since we have an overview of our KPI it would be good to see how Sales has grown over the years
+### 2.  How has Sales grown over the years
 
 ```sql
 WITH YearlyRevenue AS
@@ -140,9 +140,9 @@ ORDER BY Year;
 ```
 <img width="549" height="129" alt="image" src="https://github.com/user-attachments/assets/f880d735-b2d8-4bb7-8370-a7bdead2c608" />
 
-The query result shows a 54% Decline in Revenue 2014, which is a significant drop
+The result shows a 54% decline in revenue in 2014, which is a significant drop.
 
-### What Caused this decline? 
+### Investigation: Monthly Trend Analysis. What Caused this decline? 
 
 To investigate why there is a huge drop I carried a further analysis, I analyzed the monthly trend each year
 
@@ -158,10 +158,9 @@ ORDER BY Year, Month;
 
 <img width="288" height="304" alt="image" src="https://github.com/user-attachments/assets/c7622686-e0a0-49a1-bcea-06c64767a528" />
 
-The results reveal that in 2014, there were only six months of sales data, which directly explains the large decline in yearly revenue. This suggests that the drop is not due to business performance issues, but rather partial data availability.
+The results reveal that in 2014, only six months of sales data exist. The decline is due to partial data availability, not an actual drop in performance.
 
-
-### . Which Channel drives the most Sales?
+### 3. Which Channel drives the most Sales?
 
 ```sql
 SELECT soh.Channel,
@@ -174,9 +173,9 @@ GROUP BY soh.Channel;
 
 <img width="479" height="80" alt="image" src="https://github.com/user-attachments/assets/4fc130ba-02c3-4f5d-8ad0-8a23ce3291fc" />
 
-Resellers generates nearly three times more revenue than online customers even though online shoppers place more orders. This is because reseller orders are much larger in value, they have an average order value of $23,850.
+Resellers generate nearly three times more revenue than online customers, even though online shoppers place more orders. This is because reseller orders have a significantly higher average order value of $23,850.
 
-### . What are our top-selling products?
+### 4. What are our top-selling products?
 
 ```sql
 SELECT  Products, Category, SUM(LineTotal) as Revenue
@@ -188,11 +187,11 @@ ORDER BY Revenue DESC;
 ```
 <img width="452" height="276" alt="image" src="https://github.com/user-attachments/assets/4534d85e-7996-41a0-8f26-82ff1c6cafde" />
 
-Mountain-200 Black, 38 records the highest revenue, closely followed by Mountain-200 Black, 42. Interestingly all top 10 products are from the bikes category.
+Mountain-200 Black, 38 is the top-revenue product, closely followed by Mountain-200 Black, 42. Interestingly all top 10 products belong to the Bikes category.
 
-### . Who are our customers? What is their Purchasing Behaviour like?
+### 5. Customer Purchasing Behavior (RFM Analysis)
 
-For this, I did an RFM analysis, what better way to understand and know our customers better. I created a view first to store the Customers RFM information before doing a segement distribution.
+I performed an RFM analysis to understand customer segments and purchasing behavior. I created a view to store RFM metrics and customer segments.
 
 ```
 GO
@@ -246,7 +245,8 @@ FROM RFM_Scores;
 GO
 ```
 
-To know how customers are distributed across the segments and understand their purchasing behaviour, I wrote this query.
+To understand customer distribution across segments:
+
 ```sql
 SELECT Customer_Segment, 
        COUNT(*) AS CustomerCount,
@@ -259,9 +259,17 @@ ORDER BY TotalRevenue DESC;
 ```
 <img width="660" height="226" alt="image" src="https://github.com/user-attachments/assets/3a6bbadb-a74e-4af0-9500-06a5324c62b1" />
 
-The champions segment generates the highest revenue at $75.9M, with an impressive average spend of $31,238 per customer. However, nearly 30% of our customer base is at-risk with 11.09% classified as "At-Risk" and 8.55% "Hibernating", and 10.25% of customers are already "Lost" representing $21.5M in vulnerable revenue.
+The Champions segment generates the highest revenue $75.9M with an average spend of $31,238 per customer.
 
-### . Finally, Where are they buying from?
+However, nearly 30% of customers are at risk:
+
+- 11.09% At-Risk
+- 8.55% Hibernating
+- 10.25% Lost
+
+representing $21.5M in vulnerable revenue
+
+### 6. Where Are Customers Buying From?
 
 ```sql
 SELECT Name AS TerritoryRegion, SUM(SubTotal) AS Revenue,
@@ -274,21 +282,30 @@ ORDER BY Revenue DESC
 ```
 <img width="394" height="273" alt="image" src="https://github.com/user-attachments/assets/0ede4db6-c776-4f63-9995-15f4c17724cc" />
 
-
-SouthWest, Canada and NorthWest are the top performing regions, making almost 50% of the total generated revenue. 
+The Southwest, Canada, and Northwest regions are the top performers, contributing nearly 50% of total revenue.
 
 ## Recommendations
 
-- The company should focus on reducing costs, increasing repeat purchases, and strategically upselling to improve revenue and profitability.
-- Boost online revenue via targeted marketing, campaigns, Ads.
-- Introduce products that are related to bikes, examples are helmets, cycling apparel, bike maintenance equipment.
+- Reduce costs, increase repeat purchases, and explore upselling strategies to improve profit margin.
+- Boost online revenue via targeted ads, promotions, and personalized campaigns.
+- Introduce complementary bike-related products (helmets, cycling apparel, maintenance tools).
 - Launch retention campaigns targeting At-Risk and Hibernating customers.
-- Focus marketing and sales efforts in top-performing regions and develop strategies to grow underperforming regions
+- Focus growth initiatives in top regions while improving underperforming territories.
 
-## Dashboard
+## Visualization
 
-I connected the Database to PowerBI for visualization. I created a Date table, modelled the tables and created measures to aid my Visualization.
+I connected the database to Power BI for visualization, created a Date table, modeled relationships, and built DAX measures to support the dashboard.
+
+An Image of the Data Modell
+
+<img width="1177" height="643" alt="image" src="https://github.com/user-attachments/assets/01e4364f-e2ee-47be-b7e7-ac6a94c5adab" />
+
+Here is an Image of the dashboard:
 
 ![Adventure_page-0001](https://github.com/user-attachments/assets/b5f4f74c-1cb8-40dd-8d3f-42c04e4bd260)
 
-Interact with the dashboard here
+Interact with the dashboard [here](https://app.powerbi.com/view?r=eyJrIjoiNDc0MGI5YzktZDE3NS00MzhhLTllYTYtMDY2NzdmZWZjZDk4IiwidCI6ImM0ZTg5YWFlLTU4OTMtNDc0ZS1iYjZjLTA4MDI4MmM0ZWY1OCJ9)
+
+## Presentation
+
+The final 5-slide presentation summarizing the key insights and recommendations can be downloaded here
